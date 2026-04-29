@@ -1,0 +1,41 @@
+services:
+  pixie:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Required: comma-separated API keys
+      - PIXIE_API_KEYS=${PIXIE_API_KEYS:-dev-key-change-me}
+      # Auth toggle (disable for local dev)
+      - PIXIE_AUTH_ENABLED=${PIXIE_AUTH_ENABLED:-true}
+      # Mock mode (set to 1 if no LLM key)
+      - PIXIE_MOCK=${PIXIE_MOCK:-0}
+      # LLM provider key
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      # Server settings
+      - PIXIE_API_HOST=0.0.0.0
+      - PIXIE_API_PORT=8000
+      - PIXIE_MAX_CONCURRENT=${PIXIE_MAX_CONCURRENT:-10}
+      - PIXIE_REQUEST_TIMEOUT=${PIXIE_REQUEST_TIMEOUT:-60}
+      - PIXIE_RATE_LIMIT_RPM=${PIXIE_RATE_LIMIT_RPM:-60}
+      # Resilience
+      - PIXIE_LLM_TIMEOUT=${PIXIE_LLM_TIMEOUT:-30}
+      - PIXIE_TOOL_TIMEOUT=${PIXIE_TOOL_TIMEOUT:-15}
+      - PIXIE_MAX_RETRIES=${PIXIE_MAX_RETRIES:-2}
+      - PIXIE_CB_FAILURE_THRESHOLD=${PIXIE_CB_FAILURE_THRESHOLD:-5}
+      - PIXIE_CB_RECOVERY_SECONDS=${PIXIE_CB_RECOVERY_SECONDS:-30}
+      # Logging
+      - PIXIE_LOG_LEVEL=${PIXIE_LOG_LEVEL:-INFO}
+      - PIXIE_LOG_FILE=/app/logs/pixie.jsonl
+    volumes:
+      - pixie-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; r = httpx.get('http://127.0.0.1:8000/health'); assert r.status_code == 200"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  pixie-logs:

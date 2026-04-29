@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# Pixie data (FAISS index persistence)
+.pixie_data/
+
+# Voice models (downloaded on first use)
+models/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs (generated at runtime)
+logs/
