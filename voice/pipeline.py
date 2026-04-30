@@ -220,7 +220,8 @@ class VoicePipeline:
         chunk_samples = int(self._config.sample_rate * 0.05)  # 50ms chunks
 
         def callback(indata, frames, time_info, status):
-            rms = float((__import__("numpy").sqrt(__import__("numpy").mean(indata ** 2))))
+            import numpy as np
+            rms = float(np.sqrt(np.mean(indata ** 2)))
             try:
                 energy_queue.put_nowait(rms)
             except asyncio.QueueFull:

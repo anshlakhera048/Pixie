@@ -540,6 +540,21 @@ Auth can be disabled for local development: `PIXIE_AUTH_ENABLED=false`
 
 ---
 
+## Troubleshooting
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| `RuntimeError: OPENROUTER_API_KEY not set` | No LLM key configured | Set `OPENROUTER_API_KEY` or run with `PIXIE_MOCK=1` |
+| `ModuleNotFoundError: faiss` | Optional RAG dependency | `pip install faiss-cpu` (or ignore — falls back to placeholder memory) |
+| `ModuleNotFoundError: faster_whisper` | Voice deps not installed | `pip install faster-whisper TTS sounddevice numpy` |
+| `401 Unauthorized` on API | Auth enabled without valid key | Set `PIXIE_API_KEYS=your-key` or `PIXIE_AUTH_ENABLED=0` |
+| `429 Too Many Requests` | Rate limit exceeded | Wait 60s or increase `PIXIE_RATE_LIMIT_RPM` |
+| Agent loops without answering | LLM returning malformed JSON | Check model compatibility; simpler models may not follow JSON schema |
+| Docker health check failing | App not ready within 10s | Increase `start_period` in `docker-compose.yml` or check logs |
+| Voice mode not activating | Missing audio device | Verify microphone access and `sounddevice` installation |
+
+---
+
 ## Future Improvements
 
 - Multi-agent coordination with task delegation

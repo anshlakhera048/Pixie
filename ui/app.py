@@ -182,12 +182,10 @@ async def ui_chat(request: Request):
         return JSONResponse({"error": "Empty message"}, status_code=400)
 
     try:
-        from core.orchestrator import Orchestrator
-
-        orchestrator = _get_orchestrator()
+        orchestrator, runtime = _get_orchestrator()
         # Collect streamed response
         chunks: list[str] = []
-        async for chunk in orchestrator.runtime.submit_streaming(message):
+        async for chunk in runtime.submit_streaming(message):
             chunks.append(chunk)
         response = "".join(chunks)
         return {"response": response}
@@ -210,14 +208,18 @@ async def ui_metrics():
 # ------------------------------------------------------------------
 
 _orchestrator = None
+_runtime = None
 
 
 def _get_orchestrator():
-    """Lazy-init the orchestrator for UI mode."""
-    global _orchestrator
+    """Lazy-init the orchestrator and runtime for UI mode."""
+    global _orchestrator, _runtime
     if _orchestrator is None:
         from core.orchestrator import Orchestrator
+        from runtime.async_runtime import AsyncRuntime
         _orchestrator = Orchestrator()
+        _runtime = AsyncRuntime(_orchestrator.agent)
+    return _orchestrator, _runtime
     return _orchestrator
 
 

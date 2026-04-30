@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 from typing import Any, AsyncGenerator
 
 from core.context_manager import ContextManager
@@ -427,7 +428,7 @@ class Agent:
                 return "[interrupted]"
 
             log_event(log, logging.INFO, "agent_iteration_async", iteration=iteration)
-            step_start = __import__("time").time()
+            step_start = time.time()
 
             messages = self._context_mgr.build_messages("")
             raw_response = await self._llm.achat(messages)
@@ -463,7 +464,7 @@ class Agent:
 
             if action == "none":
                 self._memory.add("assistant", raw_response)
-                duration_ms = (__import__("time").time() - step_start) * 1000
+                duration_ms = (time.time() - step_start) * 1000
                 if self._current_trace:
                     self._current_trace.add_step(iteration, thought, action, args, duration_ms=duration_ms)
                     self._current_trace.finalize(final_answer or "")
@@ -478,7 +479,7 @@ class Agent:
             feedback_json = json.dumps(tool_feedback)
             self._memory.add("tool", feedback_json)
 
-            duration_ms = (__import__("time").time() - step_start) * 1000
+            duration_ms = (time.time() - step_start) * 1000
             if self._current_trace:
                 self._current_trace.add_step(iteration, thought, action, args, tool_result=tool_feedback, duration_ms=duration_ms)
 
@@ -509,7 +510,7 @@ class Agent:
                 return
 
             log_event(log, logging.INFO, "agent_iteration_stream", iteration=iteration)
-            step_start = __import__("time").time()
+            step_start = time.time()
             messages = self._context_mgr.build_messages("")
 
             # For tool-use iterations, use full response (non-streaming)
@@ -541,7 +542,7 @@ class Agent:
 
             if action == "none":
                 self._memory.add("assistant", raw_response)
-                duration_ms = (__import__("time").time() - step_start) * 1000
+                duration_ms = (time.time() - step_start) * 1000
                 if self._current_trace:
                     self._current_trace.add_step(iteration, thought, action, args, duration_ms=duration_ms)
                     self._current_trace.finalize(final_answer or "")
@@ -557,7 +558,7 @@ class Agent:
             feedback_json = json.dumps(tool_feedback)
             self._memory.add("tool", feedback_json)
 
-            duration_ms = (__import__("time").time() - step_start) * 1000
+            duration_ms = (time.time() - step_start) * 1000
             if self._current_trace:
                 self._current_trace.add_step(iteration, thought, action, args, tool_result=tool_feedback, duration_ms=duration_ms)
 
